@@ -41,6 +41,9 @@ add_action('widgets_init', 'my_minimal_theme_widgets_init');
 
 // リライト処理
 function custom_rewrite_rules() {
+    // '/' にアクセスしたときの処理
+    add_rewrite_rule('^$', 'index.php?pagename=root', 'top');
+
     // '/home' にアクセスしたときの処理
     add_rewrite_rule('^home/?$', 'index.php?pagename=home', 'top');
     
@@ -68,6 +71,14 @@ add_action('after_switch_theme', 'my_rewrite_flush');
 // カスタムテンプレートのロード
 function load_custom_template($template) {
     global $wp_query;
+
+        // トップページの場合
+    if (is_front_page() && is_home()) {
+        $new_template = locate_template(array('root.php'));
+        if (!empty($new_template)) {
+            return $new_template;
+        }
+    }
     
     if (isset($wp_query->query['pagename'])) {
         if ($wp_query->query['pagename'] === 'home') {
