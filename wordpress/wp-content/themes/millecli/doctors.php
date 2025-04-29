@@ -15,7 +15,7 @@
     <?php wp_body_open(); ?>
     
     <header>
-        <h1>Test</h1>
+        <h1>先生一覧</h1>
     </header>
 
     <main>
