@@ -71,27 +71,27 @@ function load_custom_template($template) {
     
     if (isset($wp_query->query['pagename'])) {
         if ($wp_query->query['pagename'] === 'home') {
-            $new_template = locate_template(array('home.php'));
+            $new_template = locate_template(array('pages/home.php'));
             if (!empty($new_template)) {
                 return $new_template;
             }
         } elseif ($wp_query->query['pagename'] === 'product') {
-            $new_template = locate_template(array('product.php'));
+            $new_template = locate_template(array('pages/product.php'));
             if (!empty($new_template)) {
                 return $new_template;
             }
         } elseif ($wp_query->query['pagename'] === 'services') {
-            $new_template = locate_template(array('services.php'));
+            $new_template = locate_template(array('pages/services.php'));
             if (!empty($new_template)) {
                 return $new_template;
             }
         } elseif ($wp_query->query['pagename'] === 'info') {
-            $new_template = locate_template(array('info.php'));
+            $new_template = locate_template(array('pages/info.php'));
             if (!empty($new_template)) {
                 return $new_template;
             }
         } elseif ($wp_query->query['pagename'] === 'doctors') {
-            $new_template = locate_template(array('doctors.php'));
+            $new_template = locate_template(array('pages/doctors.php'));
             if (!empty($new_template)) {
                 return $new_template;
             }
