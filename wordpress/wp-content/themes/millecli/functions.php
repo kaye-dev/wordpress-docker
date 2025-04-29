@@ -39,25 +39,33 @@ function my_minimal_theme_widgets_init() {
 }
 add_action('widgets_init', 'my_minimal_theme_widgets_init');
 
+// カスタムページの設定
+function millecli_custom_pages() {
+    // カスタムページの定義（ページ名 => テンプレートパス）
+    return array(
+        'root'     => 'root.php',
+        'home'     => 'pages/home.php',
+        'product'  => 'pages/product.php',
+        'services' => 'pages/services.php',
+        'info'     => 'pages/info.php',
+        'doctors'  => 'pages/doctors.php',
+    );
+}
+
 // リライト処理
 function custom_rewrite_rules() {
-    // '/' にアクセスしたときの処理
-    add_rewrite_rule('^$', 'index.php?pagename=root', 'top');
-
-    // '/home' にアクセスしたときの処理
-    add_rewrite_rule('^home/?$', 'index.php?pagename=home', 'top');
+    // カスタムページの設定を取得
+    $custom_pages = millecli_custom_pages();
     
-    // '/product' にアクセスしたときの処理
-    add_rewrite_rule('^product/?$', 'index.php?pagename=product', 'top');
-
-    // '/services' にアクセスしたときの処理
-    add_rewrite_rule('^services/?$', 'index.php?pagename=services', 'top');
-
-    // '/info' にアクセスしたときの処理
-    add_rewrite_rule('^info/?$', 'index.php?pagename=info', 'top');
-
-    // '/doctors' にアクセスしたときの処理
-    add_rewrite_rule('^doctors/?$', 'index.php?pagename=doctors', 'top');
+    // トップページのリライトルール
+    add_rewrite_rule('^$', 'index.php?pagename=root', 'top');
+    
+    // その他のカスタムページのリライトルール
+    foreach ($custom_pages as $page => $template) {
+        if ($page !== 'root') {
+            add_rewrite_rule('^' . $page . '/?$', 'index.php?pagename=' . $page, 'top');
+        }
+    }
 }
 add_action('init', 'custom_rewrite_rules');
 
@@ -71,8 +79,8 @@ add_action('after_switch_theme', 'my_rewrite_flush');
 // カスタムテンプレートのロード
 function load_custom_template($template) {
     global $wp_query;
-
-        // トップページの場合
+    
+    // トップページの場合
     if (is_front_page() && is_home()) {
         $new_template = locate_template(array('root.php'));
         if (!empty($new_template)) {
@@ -80,29 +88,13 @@ function load_custom_template($template) {
         }
     }
     
+    // カスタムページの処理
     if (isset($wp_query->query['pagename'])) {
-        if ($wp_query->query['pagename'] === 'home') {
-            $new_template = locate_template(array('pages/home.php'));
-            if (!empty($new_template)) {
-                return $new_template;
-            }
-        } elseif ($wp_query->query['pagename'] === 'product') {
-            $new_template = locate_template(array('pages/product.php'));
-            if (!empty($new_template)) {
-                return $new_template;
-            }
-        } elseif ($wp_query->query['pagename'] === 'services') {
-            $new_template = locate_template(array('pages/services.php'));
-            if (!empty($new_template)) {
-                return $new_template;
-            }
-        } elseif ($wp_query->query['pagename'] === 'info') {
-            $new_template = locate_template(array('pages/info.php'));
-            if (!empty($new_template)) {
-                return $new_template;
-            }
-        } elseif ($wp_query->query['pagename'] === 'doctors') {
-            $new_template = locate_template(array('pages/doctors.php'));
+        $pagename = $wp_query->query['pagename'];
+        $custom_pages = millecli_custom_pages();
+        
+        if (isset($custom_pages[$pagename])) {
+            $new_template = locate_template(array($custom_pages[$pagename]));
             if (!empty($new_template)) {
                 return $new_template;
             }
