@@ -29,6 +29,16 @@ services:
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
 
+  # Tailwind CSSビルドサービス
+  tailwind:
+    image: node:18-alpine
+    container_name: wordpress_tailwind_builder
+    volumes:
+      - ./wordpress/wp-content/themes/millecli:/app
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    restart: always
+
 volumes:
   db_data: {}
 
