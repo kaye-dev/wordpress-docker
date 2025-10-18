@@ -1,0 +1,36 @@
+{
+  "name": "wordpress-docker-cdk",
+  "version": "1.0.0",
+  "description": "WordPress Docker AWS CDK Infrastructure",
+  "bin": {
+    "wordpress-docker-cdk": "bin/wordpress-stack.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "deploy": "cdk deploy --all",
+    "destroy": "cdk destroy --all",
+    "diff": "cdk diff",
+    "synth": "cdk synth"
+  },
+  "keywords": [
+    "aws-cdk",
+    "wordpress",
+    "docker",
+    "infrastructure"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "aws-cdk": "^2.114.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.114.0",
+    "constructs": "^10.3.0",
+    "dotenv": "^16.3.1"
+  }
+}

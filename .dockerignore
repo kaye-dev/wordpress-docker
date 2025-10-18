@@ -1,0 +1,63 @@
+# Git関連
+.git
+.gitignore
+.gitattributes
+
+# Docker関連
+.dockerignore
+Dockerfile
+docker-compose*.yml
+
+# CDK関連
+cdk
+cdk.out
+*.js
+*.d.ts
+
+# Node.js
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# 環境変数
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ログ
+*.log
+logs
+
+# ビルドスクリプト
+new.sh
+dev.sh
+deploy.sh
+
+# ドキュメント
+README.md
+docs
+
+# 一時ファイル
+*.tmp
+*.bak
+*.cache
+
+# WordPress開発用（本番に含めない）
+wordpress/wp-content/themes/*/node_modules
+wordpress/wp-content/themes/*/src
+wordpress/wp-content/themes/*/tailwind.config.js
+wordpress/wp-content/themes/*/postcss.config.js
+wordpress/wp-content/themes/*/package*.json
