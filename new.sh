@@ -115,9 +115,44 @@ if [ $attempt -eq $max_attempts ]; then
 fi
 
 # ===========================================
+# .gitignoreへの追加確認
+# ===========================================
+echo -e "${YELLOW}[7/8] .gitignore設定の確認...${NC}"
+
+# wordpress/ディレクトリが存在するか確認
+if [ -d "wordpress" ]; then
+    echo -e "${BLUE}wordpress/ ディレクトリが作成されました${NC}"
+    echo -e "${YELLOW}デバッグ目的で一時的にGit管理下に含めることができます${NC}"
+    echo -e "${BLUE}.gitignore に wordpress/ を追加しますか？ [y/N]: ${NC}"
+    read -r response
+
+    case "$response" in
+        [yY][eE][sS]|[yY])
+            # .gitignoreに追加
+            if [ -f .gitignore ]; then
+                if ! grep -q "^wordpress/$" .gitignore; then
+                    echo "wordpress/" >> .gitignore
+                    echo -e "${GREEN}✓ .gitignore に wordpress/ を追加しました${NC}\n"
+                else
+                    echo -e "${YELLOW}! wordpress/ は既に .gitignore に含まれています${NC}\n"
+                fi
+            else
+                echo "wordpress/" > .gitignore
+                echo -e "${GREEN}✓ .gitignore を作成し、wordpress/ を追加しました${NC}\n"
+            fi
+            ;;
+        *)
+            echo -e "${GREEN}✓ wordpress/ を Git管理下に含めます（デバッグモード）${NC}\n"
+            ;;
+    esac
+else
+    echo -e "${YELLOW}! wordpress/ ディレクトリが見つかりません${NC}\n"
+fi
+
+# ===========================================
 # 完了メッセージ
 # ===========================================
-echo -e "${YELLOW}[7/7] セットアップ完了!${NC}\n"
+echo -e "${YELLOW}[8/8] セットアップ完了!${NC}\n"
 
 echo -e "${GREEN}===========================================${NC}"
 echo -e "${GREEN}  WordPress開発環境のセットアップが完了しました！${NC}"
