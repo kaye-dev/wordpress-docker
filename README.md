@@ -23,7 +23,7 @@ npm install
 npm run new
 ```
 
-開発環境: http://localhost:8000
+開発環境: [localhost:8000](http://localhost:8000)
 
 ## 開発環境
 
@@ -46,7 +46,7 @@ npm run dev clean
 
 ## 本番デプロイ（AWS）
 
-### 1. AWS設定
+### 1. AWS 設定
 
 ```bash
 # 認証情報の設定
@@ -63,7 +63,7 @@ vim .env
 - `PROJECT_NAME`
 - `ENVIRONMENT`
 
-### 2. CDK依存関係
+### 2. CDK 依存関係
 
 ```bash
 cd cdk
@@ -81,9 +81,9 @@ npm run deploy
 
 - プロジェクト名
 - 環境（production/staging/development）
-- WAF有効/無効（追加料金: $6〜10/月）
+- WAF 有効/無効（追加料金: $6〜10/月）
 
-デプロイ完了後、CloudFront URLが表示されます（反映まで15〜30分）
+デプロイ完了後、CloudFront URL が表示されます（反映まで 15〜30 分）
 
 ## リソースの削除
 
