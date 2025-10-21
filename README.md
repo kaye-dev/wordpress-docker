@@ -113,8 +113,11 @@ cp .env.example .env
 # 必要に応じて .env を編集
 vim .env
 
+# npm依存関係のインストール
+npm install
+
 # 初期セットアップの実行
-./new.sh
+npm run new
 ```
 
 ### 3. 開発環境へアクセス
@@ -131,10 +134,12 @@ wordpress-docker/
 ├── Dockerfile                # 本番用Dockerイメージ
 ├── docker-compose.yml        # 開発環境設定
 ├── docker-compose.prod.yml   # 本番ビルド用設定
-├── new.sh                    # 初期セットアップスクリプト
-├── dev.sh                    # 開発環境操作スクリプト
-├── deploy.sh                 # AWSデプロイスクリプト
+├── package.json              # npm scripts設定
 ├── README.md                 # このファイル
+├── scripts/                  # 管理スクリプト
+│   ├── new.sh                # 初期セットアップスクリプト
+│   ├── dev.sh                # 開発環境操作スクリプト
+│   └── deploy.sh             # AWSデプロイスクリプト
 ├── wordpress/                # WordPressファイル
 │   └── wp-content/
 │       └── themes/
@@ -158,33 +163,43 @@ wordpress-docker/
 
 ### 基本コマンド
 
+npm scriptsを使って簡単に操作できます：
+
 ```bash
 # 開発環境の起動
-./dev.sh start
+npm run dev start
 
 # 開発環境の停止
-./dev.sh stop
+npm run dev stop
 
 # 開発環境の再起動
-./dev.sh restart
+npm run dev restart
 
 # ログの表示
-./dev.sh logs
+npm run dev logs
 
 # コンテナの状態確認
-./dev.sh status
+npm run dev status
 
 # WordPressコンテナにログイン
-./dev.sh shell
+npm run dev shell
 
 # データベースコンテナにログイン
-./dev.sh db-shell
+npm run dev db-shell
 
 # イメージの再ビルド
-./dev.sh build
+npm run dev build
 
 # 環境のクリーンアップ
-./dev.sh clean
+npm run dev clean
+```
+
+または直接スクリプトを実行することもできます：
+
+```bash
+./scripts/dev.sh start
+./scripts/dev.sh stop
+# ... etc
 ```
 
 ### Tailwind CSS 開発
@@ -233,7 +248,13 @@ cd ..
 ### デプロイの実行
 
 ```bash
-./deploy.sh
+npm run deploy
+```
+
+または直接スクリプトを実行：
+
+```bash
+./scripts/deploy.sh
 ```
 
 デプロイスクリプトは対話式で以下を設定できます：
@@ -297,7 +318,7 @@ https://xxxxxxxxxxxxxx.cloudfront.net
 ### 開発環境
 
 ```bash
-./dev.sh clean
+npm run dev clean
 ```
 
 ### 本番環境（AWS）
@@ -318,11 +339,11 @@ cd ..
 
 ```bash
 # ログを確認
-./dev.sh logs
+npm run dev logs
 
 # クリーンな状態から再起動
-./dev.sh clean
-./new.sh
+npm run dev clean
+npm run new
 ```
 
 **Q: データベース接続エラー**
@@ -376,14 +397,6 @@ aws logs tail /ecs/<project-name>-<environment> --follow
 - [AWS CDK 公式ドキュメント](https://docs.aws.amazon.com/cdk/)
 - [AWS ECS 公式ドキュメント](https://docs.aws.amazon.com/ecs/)
 - [AWS WAF 公式ドキュメント](https://docs.aws.amazon.com/waf/)
-
-## 📝 ライセンス
-
-MIT
-
-## 🤝 貢献
-
-プルリクエストを歓迎します！
 
 ---
 

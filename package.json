@@ -1,0 +1,12 @@
+{
+  "name": "wordpress-docker",
+  "version": "1.0.0",
+  "description": "WordPress Docker environment",
+  "scripts": {
+    "deploy": "./scripts/deploy.sh",
+    "dev": "./scripts/dev.sh",
+    "new": "./scripts/new.sh"
+  },
+  "keywords": ["wordpress", "docker"],
+  "private": true
+}
