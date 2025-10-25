@@ -3,8 +3,10 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { VpcStack } from '../lib/vpc-stack';
 import { RdsStack } from '../lib/rds-stack';
+import { S3Stack } from '../lib/s3-stack';
 import { EcsStack } from '../lib/ecs-stack';
 import { AlbStack } from '../lib/alb-stack';
 import { CloudFrontStack } from '../lib/cloudfront-stack';
@@ -60,7 +62,25 @@ const rdsStack = new RdsStack(app, `${projectName}-${environment}-RdsStack`, {
 });
 rdsStack.addDependency(vpcStack);
 
-// 3. ECSスタック
+// 3. S3スタック（ファイルアップロード用）
+const s3Stack = new S3Stack(app, `${projectName}-${environment}-S3Stack`, {
+  projectName,
+  environment,
+  env,
+  description: `S3 bucket for WordPress uploads for ${projectName} ${environment}`,
+});
+
+// 4. ALBスタック（ECSより先に作成）
+const albStack = new AlbStack(app, `${projectName}-${environment}-AlbStack`, {
+  projectName,
+  environment,
+  vpc: vpcStack.vpc,
+  env,
+  description: `Application Load Balancer for ${projectName} ${environment}`,
+});
+albStack.addDependency(vpcStack);
+
+// 5. ECSスタック（ALBターゲットグループを使用）
 const ecsStack = new EcsStack(app, `${projectName}-${environment}-EcsStack`, {
   projectName,
   environment,
@@ -69,6 +89,8 @@ const ecsStack = new EcsStack(app, `${projectName}-${environment}-EcsStack`, {
   databaseEndpoint: rdsStack.database.dbInstanceEndpointAddress,
   databaseName: process.env.RDS_DATABASE_NAME || 'wordpress',
   databaseSecurityGroup: rdsStack.securityGroup,
+  uploadsBucket: s3Stack.uploadsBucket,
+  targetGroup: albStack.targetGroup,
   taskCpu: parseInt(process.env.ECS_TASK_CPU || '512'),
   taskMemory: parseInt(process.env.ECS_TASK_MEMORY || '1024'),
   desiredCount: parseInt(process.env.ECS_DESIRED_COUNT || '2'),
@@ -78,20 +100,18 @@ const ecsStack = new EcsStack(app, `${projectName}-${environment}-EcsStack`, {
   description: `ECS Fargate cluster for ${projectName} ${environment}`,
 });
 ecsStack.addDependency(rdsStack);
+ecsStack.addDependency(s3Stack);
+ecsStack.addDependency(albStack);
 
-// 4. ALBスタック
-const albStack = new AlbStack(app, `${projectName}-${environment}-AlbStack`, {
-  projectName,
-  environment,
-  vpc: vpcStack.vpc,
-  ecsService: ecsStack.service,
-  ecsSecurityGroup: ecsStack.securityGroup,
-  env,
-  description: `Application Load Balancer for ${projectName} ${environment}`,
-});
-albStack.addDependency(ecsStack);
+// セキュリティグループルールの追加（スタック作成後）
+// ALB -> ECS
+ecsStack.securityGroup.addIngressRule(
+  albStack.securityGroup,
+  ec2.Port.tcp(80),
+  'Allow traffic from ALB to ECS'
+);
 
-// 5. WAFスタック（オプション）
+// 6. WAFスタック（オプション）
 let wafStack: WafStack | undefined;
 if (enableWaf) {
   wafStack = new WafStack(app, `${projectName}-${environment}-WafStack`, {
@@ -103,7 +123,7 @@ if (enableWaf) {
   });
 }
 
-// 6. CloudFrontスタック
+// 7. CloudFrontスタック
 const cloudFrontStack = new CloudFrontStack(app, `${projectName}-${environment}-CloudFrontStack`, {
   projectName,
   environment,

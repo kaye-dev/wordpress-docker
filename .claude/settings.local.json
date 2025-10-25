@@ -9,7 +9,10 @@
       "Bash(for:*)",
       "Bash(awk:*)",
       "Bash(docker-compose ps:*)",
-      "Bash(docker-compose logs:*)"
+      "Bash(docker-compose logs:*)",
+      "Bash(npm install)",
+      "Bash(npm run build)",
+      "Bash(npx cdk bootstrap:*)"
     ],
     "deny": [],
     "ask": []

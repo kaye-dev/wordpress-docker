@@ -6,6 +6,7 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
 export interface EcsStackProps extends cdk.StackProps {
@@ -16,6 +17,8 @@ export interface EcsStackProps extends cdk.StackProps {
   databaseEndpoint: string;
   databaseName: string;
   databaseSecurityGroup: ec2.SecurityGroup;
+  uploadsBucket?: s3.Bucket;
+  targetGroup?: elbv2.ApplicationTargetGroup;
   taskCpu?: number;
   taskMemory?: number;
   desiredCount?: number;
@@ -76,6 +79,11 @@ export class EcsStack extends cdk.Stack {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
 
+    // S3バケットへのアクセス権限を付与
+    if (props.uploadsBucket) {
+      props.uploadsBucket.grantReadWrite(taskRole);
+    }
+
     // CloudWatch Logsロググループ
     const logGroup = new logs.LogGroup(this, 'LogGroup', {
       logGroupName: `/ecs/${props.projectName}-${props.environment}`,
@@ -103,6 +111,10 @@ export class EcsStack extends cdk.Stack {
       environment: {
         WORDPRESS_DB_HOST: props.databaseEndpoint,
         WORDPRESS_DB_NAME: props.databaseName,
+        ...(props.uploadsBucket && {
+          S3_UPLOADS_BUCKET: props.uploadsBucket.bucketName,
+          S3_UPLOADS_REGION: cdk.Stack.of(this).region,
+        }),
       },
       secrets: {
         WORDPRESS_DB_USER: ecs.Secret.fromSecretsManager(props.databaseSecret, 'username'),
@@ -131,13 +143,6 @@ export class EcsStack extends cdk.Stack {
       allowAllOutbound: true,
     });
 
-    // RDSへのアクセスを許可
-    props.databaseSecurityGroup.addIngressRule(
-      this.securityGroup,
-      ec2.Port.tcp(3306),
-      'Allow MySQL access from ECS'
-    );
-
     // Fargateサービスの作成
     this.service = new ecs.FargateService(this, 'Service', {
       serviceName: `${props.projectName}-${props.environment}-service`,
@@ -156,6 +161,11 @@ export class EcsStack extends cdk.Stack {
       },
       enableExecuteCommand: true, // ECS Execを有効化（デバッグ用）
     });
+
+    // ターゲットグループにサービスを登録
+    if (props.targetGroup) {
+      this.service.attachToApplicationTargetGroup(props.targetGroup);
+    }
 
     // Auto Scaling設定
     const scaling = this.service.autoScaleTaskCount({

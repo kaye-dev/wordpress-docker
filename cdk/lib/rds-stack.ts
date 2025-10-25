@@ -50,6 +50,13 @@ export class RdsStack extends cdk.Stack {
       allowAllOutbound: false,
     });
 
+    // VPCのプライベートサブネットからのMySQLアクセスを許可
+    this.securityGroup.addIngressRule(
+      ec2.Peer.ipv4(props.vpc.vpcCidrBlock),
+      ec2.Port.tcp(3306),
+      'Allow MySQL access from VPC'
+    );
+
     // サブネットグループの作成
     const subnetGroup = new rds.SubnetGroup(this, 'DatabaseSubnetGroup', {
       subnetGroupName: `${props.projectName}-${props.environment}-db-subnet-group`,

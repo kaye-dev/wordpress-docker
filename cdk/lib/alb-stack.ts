@@ -10,8 +10,6 @@ export interface AlbStackProps extends cdk.StackProps {
   projectName: string;
   environment: string;
   vpc: ec2.Vpc;
-  ecsService: ecs.FargateService;
-  ecsSecurityGroup: ec2.SecurityGroup;
 }
 
 /**
@@ -23,6 +21,7 @@ export interface AlbStackProps extends cdk.StackProps {
 export class AlbStack extends cdk.Stack {
   public readonly loadBalancer: elbv2.ApplicationLoadBalancer;
   public readonly listener: elbv2.ApplicationListener;
+  public readonly targetGroup: elbv2.ApplicationTargetGroup;
   public readonly securityGroup: ec2.SecurityGroup;
 
   constructor(scope: Construct, id: string, props: AlbStackProps) {
@@ -49,12 +48,7 @@ export class AlbStack extends cdk.Stack {
       'Allow HTTPS traffic from anywhere'
     );
 
-    // ECSコンテナへのアクセスを許可
-    props.ecsSecurityGroup.addIngressRule(
-      this.securityGroup,
-      ec2.Port.tcp(80),
-      'Allow traffic from ALB'
-    );
+    // ECSコンテナへのアクセス許可は後で設定（循環依存回避）
 
     // アクセスログ用S3バケット
     const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
@@ -103,12 +97,13 @@ export class AlbStack extends cdk.Stack {
       open: true,
     });
 
-    // ターゲットグループの作成
-    const targetGroup = this.listener.addTargets('EcsTarget', {
+    // ターゲットグループの作成（ECSサービスは後で追加）
+    this.targetGroup = new elbv2.ApplicationTargetGroup(this, 'EcsTargetGroup', {
       targetGroupName: `${props.projectName}-${props.environment}-tg`,
+      vpc: props.vpc,
       port: 80,
       protocol: elbv2.ApplicationProtocol.HTTP,
-      targets: [props.ecsService],
+      targetType: elbv2.TargetType.IP,
       deregistrationDelay: cdk.Duration.seconds(30),
 
       // ヘルスチェック設定
@@ -127,9 +122,11 @@ export class AlbStack extends cdk.Stack {
       // スティッキーセッション（WordPress管理画面用）
       stickinessCookieDuration: cdk.Duration.days(1),
       stickinessCookieName: 'WORDPRESS_LB_COOKIE',
+    });
 
-      // ターゲット属性
-      targetType: elbv2.TargetType.IP,
+    // リスナーにターゲットグループを追加
+    this.listener.addTargetGroups('DefaultTargetGroup', {
+      targetGroups: [this.targetGroup],
     });
 
     // タグの追加

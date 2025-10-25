@@ -1,22 +1,5 @@
 # ===========================================
-# Stage 1: Tailwind CSS Builder
-# ===========================================
-FROM node:18-alpine AS tailwind-builder
-
-WORKDIR /build
-
-# Tailwind CSSのビルド設定をコピー
-COPY wordpress/wp-content/themes/millecli/package*.json ./
-COPY wordpress/wp-content/themes/millecli/tailwind.config.js ./
-COPY wordpress/wp-content/themes/millecli/postcss.config.js ./
-COPY wordpress/wp-content/themes/millecli/src ./src
-
-# 依存関係のインストールとビルド
-RUN npm ci --only=production && \
-    npm run build
-
-# ===========================================
-# Stage 2: WordPress Production Image
+# WordPress Production Image
 # ===========================================
 FROM wordpress:6.4-php8.2-apache
 
@@ -70,11 +53,6 @@ RUN a2enmod rewrite expires headers deflate
 
 # WordPressファイルのコピー
 COPY --chown=www-data:www-data wordpress /var/www/html
-
-# Tailwind CSSのビルド結果をコピー
-COPY --from=tailwind-builder --chown=www-data:www-data \
-    /build/dist/css/style.css \
-    /var/www/html/wp-content/themes/millecli/dist/css/style.css
 
 # WordPress設定ファイルの権限設定
 RUN chown -R www-data:www-data /var/www/html && \
