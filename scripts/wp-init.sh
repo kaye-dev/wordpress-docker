@@ -35,10 +35,26 @@ if ! wp core is-installed --allow-root 2>/dev/null; then
   wp post delete 1 --force --allow-root 2>/dev/null || true
   wp post delete 2 --force --allow-root 2>/dev/null || true
 
+  # セキュリティ設定: 管理画面URLの変更
+  if [ -n "${WP_ADMIN_LOGIN_SLUG}" ]; then
+    echo "Installing WPS Hide Login plugin for security..."
+    wp plugin install wps-hide-login --activate --allow-root
+
+    echo "Configuring custom admin login URL: ${WP_ADMIN_LOGIN_SLUG}"
+    wp option update whl_page "${WP_ADMIN_LOGIN_SLUG}" --allow-root
+
+    echo "Custom admin login URL has been set!"
+    echo "New Login URL: ${WP_URL}/${WP_ADMIN_LOGIN_SLUG}"
+    echo "Default wp-admin and wp-login.php will now return 404"
+  fi
+
   echo "WordPress installation completed!"
   echo "URL: ${WP_URL}"
   echo "Admin User: ${WP_ADMIN_USER}"
   echo "Admin Password: ${WP_ADMIN_PASSWORD}"
+  if [ -n "${WP_ADMIN_LOGIN_SLUG}" ]; then
+    echo "Login URL: ${WP_URL}/${WP_ADMIN_LOGIN_SLUG}"
+  fi
 else
   echo "WordPress is already installed."
 fi

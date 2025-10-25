@@ -7,7 +7,9 @@
       "Bash(do echo:*)",
       "Bash(done)",
       "Bash(for:*)",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(docker-compose ps:*)",
+      "Bash(docker-compose logs:*)"
     ],
     "deny": [],
     "ask": []

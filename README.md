@@ -17,6 +17,7 @@ WordPress 開発環境を Docker と WP-CLI で自動セットアップ。AWS CD
 
 - 🚀 **対話式セットアップ**: `.env`ファイルを対話形式で簡単作成
 - 🔧 **WP-CLI 自動化**: WordPress のインストールと日本語設定を自動実行
+- 🔒 **セキュリティ強化**: 管理画面URLの変更（WPS Hide Login）
 - 🐳 **Docker Compose**: MySQL + WordPress + WP-CLI の完全な開発環境
 - ☁️ **AWS デプロイ**: CDK による本番環境の構築
 
@@ -84,6 +85,25 @@ wordpress-docker-wp/
 - **[environment.md](docs/environment.md)** - 環境変数の詳細
 - **[architecture.md](docs/architecture.md)** - システム構成とアーキテクチャ
 
+## セキュリティ設定
+
+### 管理画面URLの変更
+
+セキュリティ向上のため、初期セットアップ時に管理画面のログインURLを変更できます。
+
+`.env`ファイルで設定：
+
+```bash
+WP_ADMIN_LOGIN_SLUG=my-admin
+```
+
+設定後の管理画面URL: `http://localhost:8000/my-admin`
+
+**重要**:
+- デフォルトの `/wp-admin` や `/wp-login.php` は404エラーになります
+- カスタムURLを忘れないようにしてください
+- ブックマークやパスワードマネージャーに保存することを推奨します
+
 ## トラブルシューティング
 
 ### ポートが使用されている
@@ -93,6 +113,14 @@ wordpress-docker-wp/
 ### データベース接続エラー
 
 データベースの起動を待ってから再度アクセスしてください。
+
+### 管理画面URLを忘れた
+
+`.env`ファイルの`WP_ADMIN_LOGIN_SLUG`を確認するか、WP-CLIで変更できます：
+
+```bash
+docker-compose exec wpcli wp option get whl_page --allow-root
+```
 
 ### 完全にやり直したい
 
