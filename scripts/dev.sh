@@ -29,9 +29,36 @@ prompt_with_default() {
     local default="$2"
     local value
 
-    echo -ne "${CYAN}${prompt} ${NC}[${GREEN}${default}${NC}]: "
-    read value
-    echo "${value:-$default}"
+    # プロンプトを表示して入力を受け取る（/dev/ttyを使って直接ターミナルから読み取る）
+    printf "${CYAN}%s${NC} (default: ${GREEN}%s${NC}): " "$prompt" "$default" >&2
+    read value </dev/tty
+
+    # 入力値またはデフォルト値を返す（標準出力に出力）
+    printf "%s\n" "${value:-$default}"
+}
+
+# Yes/No確認プロンプト
+confirm() {
+    local prompt="$1"
+    local default="$2"
+    local value
+
+    while true; do
+        if [ "$default" = "y" ]; then
+            printf "${CYAN}%s ${NC}[${GREEN}Y${NC}/n]: " "$prompt" >&2
+        else
+            printf "${CYAN}%s ${NC}[y/${GREEN}N${NC}]: " "$prompt" >&2
+        fi
+
+        read value </dev/tty
+        value=${value:-$default}
+
+        case "$value" in
+            [Yy]*) return 0 ;;
+            [Nn]*) return 1 ;;
+            *) echo -e "${RED}  ✗ y または n を入力してください${NC}" >&2 ;;
+        esac
+    done
 }
 
 # .envファイルのインタラクティブセットアップ
@@ -39,7 +66,6 @@ setup_env() {
     echo -e "\n${BLUE}===========================================\n"
     echo -e "WordPress 環境変数の設定\n"
     echo -e "===========================================${NC}\n"
-    echo -e "${YELLOW}各項目を入力してください（Enterでデフォルト値を使用）${NC}\n"
 
     # .env.exampleから値を読み込む
     if [ -f .env.example ]; then
@@ -48,32 +74,70 @@ setup_env() {
         set -e
     fi
 
-    # データベース設定
-    echo -e "${MAGENTA}【データベース設定】${NC}"
-    MYSQL_ROOT_PASSWORD=$(prompt_with_default "MySQL ROOTパスワード" "${MYSQL_ROOT_PASSWORD:-wordpress}")
-    MYSQL_DATABASE=$(prompt_with_default "データベース名" "${MYSQL_DATABASE:-wordpress}")
-    MYSQL_USER=$(prompt_with_default "データベースユーザー名" "${MYSQL_USER:-wordpress}")
-    MYSQL_PASSWORD=$(prompt_with_default "データベースパスワード" "${MYSQL_PASSWORD:-wordpress}")
+    # デフォルト値の事前設定
+    MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:-wordpress}"
+    MYSQL_DATABASE="${MYSQL_DATABASE:-wordpress}"
+    MYSQL_USER="${MYSQL_USER:-wordpress}"
+    MYSQL_PASSWORD="${MYSQL_PASSWORD:-wordpress}"
+    WORDPRESS_DB_HOST="${WORDPRESS_DB_HOST:-db:3306}"
+    WORDPRESS_DB_NAME="${WORDPRESS_DB_NAME:-wordpress}"
+    WORDPRESS_DB_USER="${WORDPRESS_DB_USER:-wordpress}"
+    WORDPRESS_DB_PASSWORD="${WORDPRESS_DB_PASSWORD:-wordpress}"
+    WORDPRESS_PORT="${WORDPRESS_PORT:-8000}"
+    WP_TITLE="${WP_TITLE:-Newsider HP}"
+    WP_ADMIN_USER="${WP_ADMIN_USER:-admin}"
+    WP_ADMIN_PASSWORD="${WP_ADMIN_PASSWORD:-admin}"
+    WP_ADMIN_EMAIL="${WP_ADMIN_EMAIL:-admin@example.com}"
 
-    echo ""
+    echo -e "${GREEN}デフォルト設定で素早くセットアップできます${NC}"
+    echo -e "${GREEN}カスタマイズする場合は、各項目で値を入力してください${NC}\n"
 
-    # WordPress設定
-    echo -e "${MAGENTA}【WordPress接続設定】${NC}"
-    WORDPRESS_DB_HOST=$(prompt_with_default "データベースホスト" "${WORDPRESS_DB_HOST:-db:3306}")
-    WORDPRESS_DB_NAME=$(prompt_with_default "WordPressデータベース名" "${WORDPRESS_DB_NAME:-wordpress}")
-    WORDPRESS_DB_USER=$(prompt_with_default "WordPressデータベースユーザー" "${WORDPRESS_DB_USER:-wordpress}")
-    WORDPRESS_DB_PASSWORD=$(prompt_with_default "WordPressデータベースパスワード" "${WORDPRESS_DB_PASSWORD:-wordpress}")
-    WORDPRESS_PORT=$(prompt_with_default "WordPressポート番号" "${WORDPRESS_PORT:-8000}")
+    # クイックセットアップか詳細設定か選択
+    if confirm "デフォルト設定で開始しますか？" "y"; then
+        echo -e "\n${GREEN}✓ デフォルト設定を使用します${NC}\n"
 
-    echo ""
+        # 最小限の確認のみ
+        WORDPRESS_PORT=$(prompt_with_default "WordPressポート番号" "${WORDPRESS_PORT}")
+        WP_TITLE=$(prompt_with_default "サイトタイトル" "${WP_TITLE}")
 
-    # WordPress初期設定
-    echo -e "${MAGENTA}【WordPress初期セットアップ】${NC}"
-    WP_URL=$(prompt_with_default "サイトURL" "http://localhost:${WORDPRESS_PORT}")
-    WP_TITLE=$(prompt_with_default "サイトタイトル" "${WP_TITLE:-Newsider HP}")
-    WP_ADMIN_USER=$(prompt_with_default "管理者ユーザー名" "${WP_ADMIN_USER:-admin}")
-    WP_ADMIN_PASSWORD=$(prompt_with_default "管理者パスワード" "${WP_ADMIN_PASSWORD:-admin}")
-    WP_ADMIN_EMAIL=$(prompt_with_default "管理者メールアドレス" "${WP_ADMIN_EMAIL:-admin@example.com}")
+    else
+        echo -e "\n${YELLOW}詳細設定モード${NC}\n"
+
+        # データベース設定
+        echo -e "${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${MAGENTA}【データベース設定】${NC}"
+        echo -e "${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        MYSQL_ROOT_PASSWORD=$(prompt_with_default "MySQL ROOTパスワード" "${MYSQL_ROOT_PASSWORD}")
+        MYSQL_DATABASE=$(prompt_with_default "データベース名" "${MYSQL_DATABASE}")
+        MYSQL_USER=$(prompt_with_default "データベースユーザー名" "${MYSQL_USER}")
+        MYSQL_PASSWORD=$(prompt_with_default "データベースパスワード" "${MYSQL_PASSWORD}")
+
+        echo ""
+
+        # WordPress設定
+        echo -e "${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${MAGENTA}【WordPress接続設定】${NC}"
+        echo -e "${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        WORDPRESS_DB_HOST=$(prompt_with_default "データベースホスト" "${WORDPRESS_DB_HOST}")
+        WORDPRESS_DB_NAME=$(prompt_with_default "WordPressデータベース名" "${WORDPRESS_DB_NAME}")
+        WORDPRESS_DB_USER=$(prompt_with_default "WordPressデータベースユーザー" "${WORDPRESS_DB_USER}")
+        WORDPRESS_DB_PASSWORD=$(prompt_with_default "WordPressデータベースパスワード" "${WORDPRESS_DB_PASSWORD}")
+        WORDPRESS_PORT=$(prompt_with_default "WordPressポート番号" "${WORDPRESS_PORT}")
+
+        echo ""
+
+        # WordPress初期設定
+        echo -e "${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${MAGENTA}【WordPress初期セットアップ】${NC}"
+        echo -e "${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        WP_TITLE=$(prompt_with_default "サイトタイトル" "${WP_TITLE}")
+        WP_ADMIN_USER=$(prompt_with_default "管理者ユーザー名" "${WP_ADMIN_USER}")
+        WP_ADMIN_PASSWORD=$(prompt_with_default "管理者パスワード" "${WP_ADMIN_PASSWORD}")
+        WP_ADMIN_EMAIL=$(prompt_with_default "管理者メールアドレス" "${WP_ADMIN_EMAIL}")
+    fi
+
+    # サイトURLを自動生成
+    WP_URL="http://localhost:${WORDPRESS_PORT}"
 
     # .envファイルに書き込み
     cat > .env << EOF
@@ -157,8 +221,9 @@ start_dev() {
 
     # .envファイルの確認とセットアップ
     if [ ! -f .env ]; then
-        echo -e "${YELLOW}.envファイルが見つかりません${NC}"
-        echo -e "${YELLOW}対話式セットアップを開始します...${NC}\n"
+        echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${YELLOW}  初回セットアップが必要です${NC}"
+        echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
         setup_env
     fi
 

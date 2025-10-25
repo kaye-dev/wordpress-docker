@@ -7,6 +7,5 @@
     "clean": "./scripts/del.sh",
     "deploy": "./scripts/deploy.sh"
   },
-  "keywords": ["wordpress", "docker", "wp-cli", "newsider"],
   "private": true
 }
