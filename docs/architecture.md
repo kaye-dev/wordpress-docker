@@ -125,7 +125,7 @@ newsider-hp-wp/
     │       └── millecli/   # カスタムテーマ
     ├── wp-includes/
     └── wp-config.php       # WordPress 設定ファイル
-```text
+```
 
 ## データフロー
 
@@ -152,7 +152,7 @@ newsider-hp-wp/
    ↓
 7. 起動完了
    → <http://localhost:8000> でアクセス可能
-```text
+```
 
 ### 2 回目以降の起動
 
@@ -166,7 +166,7 @@ newsider-hp-wp/
    └─ 存在しない → docker-compose up -d（新規作成）
    ↓
 4. 起動完了
-```text
+```
 
 ## ネットワーク構成
 
@@ -181,7 +181,7 @@ newsider-hp-wp_default (bridge network)
 │   └── 内部: db:3306
 └── newsider_hp_wpcli (WP-CLI)
     └── 一時的に接続
-```text
+```
 
 ### ネットワークの特徴
 
