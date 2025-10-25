@@ -8,7 +8,8 @@
     "clean:start": "./scripts/debug.sh",
     "deploy": "./scripts/deploy.sh",
     "deploy:local": "./scripts/deploy-local.sh",
-    "deploy:actions": "./scripts/deploy-actions.sh"
+    "deploy:actions": "./scripts/deploy-actions.sh",
+    "destroy": "./scripts/destroy.sh"
   },
   "private": true
 }
