@@ -101,7 +101,32 @@ WORDPRESS_PORT=8080
 
 ### 完全にやり直したい
 
+クリーンな状態から起動するには：
+
+```bash
+npm run clean:start
+# または
+./scripts/debug.sh
+```
+
+このコマンドは以下を自動的に実行します：
+- コンテナとイメージの削除
+- `.env`ファイルの削除
+- `wordpress`ディレクトリのクリーンアップ
+- クリーンな状態でアプリケーションを起動
+
+手動で行う場合：
+
 ```bash
 ./scripts/del.sh
+./scripts/dev.sh
+```
+
+### 設定だけやり直したい
+
+`.env`ファイルだけを削除して再設定する場合：
+
+```bash
+rm .env
 ./scripts/dev.sh
 ```

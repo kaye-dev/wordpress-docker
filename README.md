@@ -42,6 +42,11 @@ npm run dev
 # または
 npm run clean
 
+# クリーンな状態で起動（デバッグ用）
+./scripts/debug.sh
+# または
+npm run clean:start
+
 # AWS デプロイ
 ./scripts/deploy.sh
 # または
@@ -69,6 +74,7 @@ wordpress-docker-wp/
 ├── .env.example           # 環境変数テンプレート
 ├── scripts/               # 管理スクリプト
 │   ├── dev.sh            # 開発環境起動
+│   ├── debug.sh          # クリーンセットアップ
 │   ├── del.sh            # 完全削除
 │   ├── deploy.sh         # AWS デプロイ
 │   └── wp-init.sh        # WP-CLI 初期化
@@ -123,6 +129,21 @@ docker-compose exec wpcli wp option get whl_page --allow-root
 ```
 
 ### 完全にやり直したい
+
+クリーンな状態から起動するには、`clean:start`コマンドを使用します：
+
+```bash
+npm run clean:start
+# または
+./scripts/debug.sh
+```
+
+このコマンドは以下を自動的に実行します：
+- すべてのコンテナとイメージを削除
+- `.env`ファイルを削除
+- クリーンな状態でアプリケーションを起動
+
+手動で行う場合：
 
 ```bash
 ./scripts/del.sh

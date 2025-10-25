@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "./scripts/dev.sh",
     "clean": "./scripts/del.sh",
+    "clean:start": "./scripts/debug.sh",
     "deploy": "./scripts/deploy.sh"
   },
   "private": true
