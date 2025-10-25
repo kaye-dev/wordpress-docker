@@ -61,6 +61,7 @@ services:
       WP_ADMIN_USER: ${WP_ADMIN_USER}
       WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
       WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+      WP_ADMIN_LOGIN_SLUG: ${WP_ADMIN_LOGIN_SLUG}
     entrypoint: /scripts/wp-init.sh
     restart: "no"
 

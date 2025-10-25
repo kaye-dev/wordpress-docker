@@ -88,6 +88,7 @@ setup_env() {
     WP_ADMIN_USER="${WP_ADMIN_USER:-admin}"
     WP_ADMIN_PASSWORD="${WP_ADMIN_PASSWORD:-admin}"
     WP_ADMIN_EMAIL="${WP_ADMIN_EMAIL:-admin@example.com}"
+    WP_ADMIN_LOGIN_SLUG="${WP_ADMIN_LOGIN_SLUG:-my-admin}"
 
     echo -e "${GREEN}デフォルト設定で素早くセットアップできます${NC}"
     echo -e "${GREEN}カスタマイズする場合は、各項目で値を入力してください${NC}\n"
@@ -134,6 +135,14 @@ setup_env() {
         WP_ADMIN_USER=$(prompt_with_default "管理者ユーザー名" "${WP_ADMIN_USER}")
         WP_ADMIN_PASSWORD=$(prompt_with_default "管理者パスワード" "${WP_ADMIN_PASSWORD}")
         WP_ADMIN_EMAIL=$(prompt_with_default "管理者メールアドレス" "${WP_ADMIN_EMAIL}")
+
+        echo ""
+
+        # セキュリティ設定
+        echo -e "${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${MAGENTA}【セキュリティ設定】${NC}"
+        echo -e "${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        WP_ADMIN_LOGIN_SLUG=$(prompt_with_default "管理画面ログインURL" "${WP_ADMIN_LOGIN_SLUG}")
     fi
 
     # サイトURLを自動生成
@@ -171,6 +180,9 @@ WP_TITLE=${WP_TITLE}
 WP_ADMIN_USER=${WP_ADMIN_USER}
 WP_ADMIN_PASSWORD=${WP_ADMIN_PASSWORD}
 WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
+
+# セキュリティ設定
+WP_ADMIN_LOGIN_SLUG=${WP_ADMIN_LOGIN_SLUG}
 
 # -------------------------------------------
 # 本番環境設定（AWS）
@@ -241,10 +253,17 @@ start_dev() {
         sleep 10
     fi
 
+    # 環境変数を読み込み
+    source .env
+
     echo -e "\n${GREEN}✓ 開発環境が起動しました${NC}\n"
     echo -e "${BLUE}===========================================${NC}"
-    echo -e "${BLUE}WordPress: ${GREEN}http://localhost:$(grep WORDPRESS_PORT .env | cut -d= -f2)${NC}"
-    echo -e "${BLUE}管理画面: ${GREEN}http://localhost:$(grep WORDPRESS_PORT .env | cut -d= -f2)/wp-admin${NC}"
+    echo -e "${BLUE}WordPress: ${GREEN}http://localhost:${WORDPRESS_PORT}${NC}"
+    if [ -n "${WP_ADMIN_LOGIN_SLUG}" ]; then
+        echo -e "${BLUE}管理画面: ${GREEN}http://localhost:${WORDPRESS_PORT}/${WP_ADMIN_LOGIN_SLUG}${NC}"
+    else
+        echo -e "${BLUE}管理画面: ${GREEN}http://localhost:${WORDPRESS_PORT}/wp-admin${NC}"
+    fi
     echo -e "${BLUE}===========================================${NC}\n"
     echo -e "${CYAN}ログ確認: ${NC}docker-compose logs -f"
     echo -e "${CYAN}停止: ${NC}docker-compose stop"
