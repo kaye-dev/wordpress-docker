@@ -26,7 +26,7 @@
 │  │  Node.js     │                                        │
 │  └──────────────┘                                        │
 └─────────────────────────────────────────────────────────┘
-```text
+```
 
 ## コンテナ構成
 
@@ -38,7 +38,7 @@
 - **ボリューム**: `./wordpress:/var/www/html`
 - **依存**: MySQL コンテナ
 
-#### WordPress環境変数
+#### WordPress 環境変数
 
 - `WORDPRESS_DB_HOST`: データベースホスト
 - `WORDPRESS_DB_USER`: データベースユーザー
@@ -54,7 +54,7 @@
 - **ボリューム**: `db_data:/var/lib/mysql`
 - **Platform**: `linux/amd64` (M1/M2/M3 Mac 対応)
 
-#### MySQL環境変数
+#### MySQL 環境変数
 
 - `MYSQL_ROOT_PASSWORD`: root パスワード
 - `MYSQL_DATABASE`: 初期データベース名
@@ -70,7 +70,7 @@
   - `./wordpress:/var/www/html`
   - `./scripts:/scripts`
 
-#### WP-CLI環境変数
+#### WP-CLI 環境変数
 
 WordPress と同じデータベース設定に加え：
 
@@ -97,7 +97,7 @@ WordPress と同じデータベース設定に加え：
 
 ## ディレクトリ構成
 
-```text
+````text
 newsider-hp-wp/
 ├── docker-compose.yml        # Docker Compose 設定
 ├── .env                       # 環境変数（Git 管理外）
@@ -261,3 +261,4 @@ newsider-hp-wp_default (bridge network)
 - RDS インスタンスタイプの変更
 
 詳細は [deploy.md](./deploy.md) を参照してください。
+````
