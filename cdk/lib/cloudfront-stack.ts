@@ -34,6 +34,7 @@ export class CloudFrontStack extends cdk.Stack {
       autoDeleteObjects: props.environment !== 'production',
       encryption: s3.BucketEncryption.S3_MANAGED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
       lifecycleRules: [
         {
           enabled: true,

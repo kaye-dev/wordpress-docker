@@ -26,7 +26,10 @@
       "Bash(export PROJECT_NAME=wdp)",
       "Bash(export ENVIRONMENT=production)",
       "Bash(export AWS_REGION=ap-northeast-1)",
-      "Bash(export AWS_ACCOUNT_ID=845989088875)"
+      "Bash(export AWS_ACCOUNT_ID=845989088875)",
+      "Bash(npx cdk deploy:*)",
+      "Bash(aws s3 rb:*)",
+      "Bash(aws cloudformation wait:*)"
     ],
     "deny": [],
     "ask": []
