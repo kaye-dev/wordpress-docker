@@ -27,7 +27,7 @@ echo -e "⚠️  警告: 完全削除を実行します"
 echo -e "==========================================${NC}\n"
 
 echo -e "${YELLOW}以下がすべて削除されます:${NC}"
-echo -e "  • すべてのDockerコンテナ (newsider_hp_*)"
+echo -e "  • すべてのDockerコンテナ (wordpress_docker_*)"
 echo -e "  • すべてのDockerイメージ"
 echo -e "  • すべてのDockerボリューム（データベース含む）"
 echo -e "  • wordpressディレクトリの内容\n"
@@ -65,7 +65,7 @@ echo -e "${GREEN}✓ コンテナを削除しました${NC}\n"
 
 # 2. Docker イメージの削除
 echo -e "${YELLOW}[2/5] Dockerイメージを削除中...${NC}"
-IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "newsider_hp" || true)
+IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "wordpress_docker" || true)
 if [ -n "$IMAGES" ]; then
     echo "$IMAGES" | xargs docker rmi -f 2>/dev/null || true
     echo -e "${GREEN}✓ Dockerイメージを削除しました${NC}\n"

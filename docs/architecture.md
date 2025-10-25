@@ -2,7 +2,7 @@
 
 ## コンテナ構成
 
-### 1. WordPress Container (`newsider_hp_app`)
+### 1. WordPress Container (`wordpress_docker_app`)
 
 - **イメージ**: `wordpress:latest`
 - **役割**: WordPress アプリケーション本体
@@ -18,7 +18,7 @@
 - `WORDPRESS_DB_NAME`: データベース名
 - `WORDPRESS_LOCALE`: 言語設定（`ja`）
 
-### 2. MySQL Container (`newsider_hp_db`)
+### 2. MySQL Container (`wordpress_docker_db`)
 
 - **イメージ**: `mysql:5.7`
 - **役割**: WordPress のデータベース
@@ -33,7 +33,7 @@
 - `MYSQL_USER`: アプリケーション用ユーザー
 - `MYSQL_PASSWORD`: アプリケーション用パスワード
 
-### 3. WP-CLI Container (`newsider_hp_wpcli`)
+### 3. WP-CLI Container (`wordpress_docker_wpcli`)
 
 - **イメージ**: `wordpress:cli`
 - **役割**: WordPress の初期セットアップと管理
@@ -60,7 +60,7 @@ WordPress と同じデータベース設定に加え：
 - 日付フォーマットの設定
 - サンプル投稿の削除
 
-### 4. Tailwind CSS Builder Container (`newsider_hp_tailwind_builder`)
+### 4. Tailwind CSS Builder Container (`wordpress_docker_tailwind_builder`)
 
 - **イメージ**: `node:18-alpine`
 - **役割**: Tailwind CSS のビルド（開発時）
@@ -70,7 +70,7 @@ WordPress と同じデータベース設定に加え：
 ## ディレクトリ構成
 
 ```text
-newsider-hp-wp/
+wordpress-docker-wp/
 ├── docker-compose.yml        # Docker Compose 設定
 ├── .env                       # 環境変数（Git 管理外）
 ├── .env.example              # 環境変数のテンプレート
@@ -145,13 +145,13 @@ newsider-hp-wp/
 Docker Compose はデフォルトで内部ネットワークを作成します：
 
 ```text
-newsider-hp-wp_default (bridge network)
-├── newsider_hp_app (WordPress)
+wordpress-docker-wp_default (bridge network)
+├── wordpress_docker_app (WordPress)
 │   └── 外部: localhost:8000
 │   └── 内部: wordpress:80
-├── newsider_hp_db (MySQL)
+├── wordpress_docker_db (MySQL)
 │   └── 内部: db:3306
-└── newsider_hp_wpcli (WP-CLI)
+└── wordpress_docker_wpcli (WP-CLI)
     └── 一時的に接続
 ```
 

@@ -1,4 +1,4 @@
-# Newsider HP WordPress
+# WordPress Docker
 
 WordPress 開発環境を Docker と WP-CLI で自動セットアップ。AWS CDK による本番デプロイにも対応。
 
@@ -63,7 +63,7 @@ docker-compose logs -f
 ## プロジェクト構成
 
 ```text
-newsider-hp-wp/
+wordpress-docker-wp/
 ├── docker-compose.yml      # Docker Compose 設定
 ├── .env.example           # 環境変数テンプレート
 ├── scripts/               # 管理スクリプト

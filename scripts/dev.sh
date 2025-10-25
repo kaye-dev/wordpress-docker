@@ -84,7 +84,7 @@ setup_env() {
     WORDPRESS_DB_USER="${WORDPRESS_DB_USER:-wordpress}"
     WORDPRESS_DB_PASSWORD="${WORDPRESS_DB_PASSWORD:-wordpress}"
     WORDPRESS_PORT="${WORDPRESS_PORT:-8000}"
-    WP_TITLE="${WP_TITLE:-Newsider HP}"
+    WP_TITLE="${WP_TITLE:-Wordpress Docker}"
     WP_ADMIN_USER="${WP_ADMIN_USER:-admin}"
     WP_ADMIN_PASSWORD="${WP_ADMIN_PASSWORD:-admin}"
     WP_ADMIN_EMAIL="${WP_ADMIN_EMAIL:-admin@example.com}"
@@ -206,7 +206,7 @@ EOF
 
 # Dockerコンテナの存在確認
 check_containers() {
-    if docker ps -a --format '{{.Names}}' | grep -q "newsider_hp"; then
+    if docker ps -a --format '{{.Names}}' | grep -q "wordpress_docker"; then
         return 0
     else
         return 1

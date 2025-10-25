@@ -1,7 +1,7 @@
 {
-  "name": "newsider-hp-wp",
+  "name": "wordpress-docker",
   "version": "1.0.0",
-  "description": "Newsider HP WordPress Docker environment with WP-CLI automation",
+  "description": "WordPress Docker environment with WP-CLI automation",
   "scripts": {
     "dev": "./scripts/dev.sh",
     "clean": "./scripts/del.sh",

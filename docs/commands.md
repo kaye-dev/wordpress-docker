@@ -10,7 +10,7 @@ npm run dev
 ./scripts/dev.sh
 ```
 
-初回実行時は対話式セットアップが開始されます。2回目以降は既存の設定で起動します。
+初回実行時は対話式セットアップが開始されます。2 回目以降は既存の設定で起動します。
 
 ### 完全削除
 
@@ -20,9 +20,9 @@ npm run clean
 ./scripts/del.sh
 ```
 
-すべてのコンテナ、イメージ、ボリューム、WordPressファイルを削除します。
+すべてのコンテナ、イメージ、ボリューム、WordPress ファイルを削除します。
 
-### AWSデプロイ
+### AWS デプロイ
 
 ```bash
 npm run deploy
@@ -30,7 +30,7 @@ npm run deploy
 ./scripts/deploy.sh
 ```
 
-AWS環境へのデプロイを実行します（詳細は[deploy.md](./deploy.md)を参照）。
+AWS 環境へのデプロイを実行します（詳細は[deploy.md](./deploy.md)を参照）。
 
 ## Docker Compose コマンド
 
@@ -94,7 +94,7 @@ docker-compose exec db mysql -u wordpress -pwordpress wordpress
 
 ## WP-CLI コマンド
 
-コンテナ内でWP-CLIを使用できます：
+コンテナ内で WP-CLI を使用できます：
 
 ```bash
 # WordPressコンテナに入る
@@ -107,7 +107,7 @@ wp user list --allow-root
 wp option get siteurl --allow-root
 ```
 
-### よく使うWP-CLIコマンド
+### よく使う WP-CLI コマンド
 
 ```bash
 # プラグインのインストール
@@ -172,14 +172,14 @@ wp scaffold _s my-theme --allow-root
 docker-compose exec wordpress wp db export /var/www/html/backup.sql --allow-root
 
 # ローカルにコピー
-docker cp newsider_hp_app:/var/www/html/backup.sql ./backup.sql
+docker cp wordpress_docker_app:/var/www/html/backup.sql ./backup.sql
 ```
 
 ### データベースのリストア
 
 ```bash
 # ローカルからコンテナにコピー
-docker cp ./backup.sql newsider_hp_app:/var/www/html/backup.sql
+docker cp ./backup.sql wordpress_docker_app:/var/www/html/backup.sql
 
 # インポート
 docker-compose exec wordpress wp db import /var/www/html/backup.sql --allow-root
@@ -195,7 +195,7 @@ docker-compose build --no-cache
 docker-compose up -d
 ```
 
-### 使用されていないDockerリソースの削除
+### 使用されていない Docker リソースの削除
 
 ```bash
 # 未使用のコンテナ、ネットワーク、イメージを削除
