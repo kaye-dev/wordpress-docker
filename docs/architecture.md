@@ -97,7 +97,7 @@ WordPress と同じデータベース設定に加え：
 
 ## ディレクトリ構成
 
-````text
+```text
 newsider-hp-wp/
 ├── docker-compose.yml        # Docker Compose 設定
 ├── .env                       # 環境変数（Git 管理外）
@@ -261,4 +261,3 @@ newsider-hp-wp_default (bridge network)
 - RDS インスタンスタイプの変更
 
 詳細は [deploy.md](./deploy.md) を参照してください。
-````
