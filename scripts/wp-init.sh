@@ -35,6 +35,10 @@ if ! wp core is-installed --allow-root 2>/dev/null; then
   wp post delete 1 --force --allow-root 2>/dev/null || true
   wp post delete 2 --force --allow-root 2>/dev/null || true
 
+  # CPT UI プラグインのインストールと有効化
+  echo "Installing Custom Post Type UI plugin..."
+  wp plugin install custom-post-type-ui --activate --allow-root
+
   # セキュリティ設定: 管理画面URLの変更
   if [ -n "${WP_ADMIN_LOGIN_SLUG}" ]; then
     echo "Installing WPS Hide Login plugin for security..."
