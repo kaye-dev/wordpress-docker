@@ -205,15 +205,26 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 # ===========================================
-# CDKデプロイの実行
+# 段階的なCDKデプロイの実行
 # ===========================================
 echo -e "\n${YELLOW}[6/8] AWS環境へデプロイ中...${NC}"
 echo -e "${CYAN}これには10〜20分かかる場合があります...${NC}\n"
 
-# すべてのスタックをデプロイ
-cdk deploy --all --require-approval never
+# ステップ1: インフラストラクチャスタック（VPC, RDS, S3, ALB）
+echo -e "${CYAN}[6-1] インフラストラクチャスタックをデプロイ中...${NC}"
+cdk deploy ${PROJECT_NAME}-${ENVIRONMENT}-VpcStack \
+           ${PROJECT_NAME}-${ENVIRONMENT}-RdsStack \
+           ${PROJECT_NAME}-${ENVIRONMENT}-S3Stack \
+           ${PROJECT_NAME}-${ENVIRONMENT}-AlbStack \
+           --require-approval never
 
-echo -e "\n${GREEN}✓ CDKデプロイが完了しました${NC}\n"
+# ステップ2: ECSスタック（ECRリポジトリとクラスターを作成、サービスは0タスク）
+echo -e "${CYAN}[6-2] ECSスタックをデプロイ中（ECRリポジトリ作成）...${NC}"
+export INITIAL_DEPLOY=true
+cdk deploy ${PROJECT_NAME}-${ENVIRONMENT}-EcsStack --require-approval never
+unset INITIAL_DEPLOY
+
+echo -e "\n${GREEN}✓ 初期スタックのデプロイが完了しました${NC}\n"
 
 # ===========================================
 # ECRへのイメージプッシュ
@@ -233,6 +244,7 @@ if [ -z "$ECR_REPO" ]; then
 fi
 
 # ECRログイン
+echo -e "${CYAN}ECRにログイン中...${NC}"
 aws ecr get-login-password --region ${AWS_REGION} | \
     docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
@@ -240,27 +252,31 @@ aws ecr get-login-password --region ${AWS_REGION} | \
 docker tag ${PROJECT_NAME}:latest ${ECR_REPO}:latest
 
 # ECRにプッシュ
+echo -e "${CYAN}イメージをプッシュ中...${NC}"
 docker push ${ECR_REPO}:latest
 
 echo -e "${GREEN}✓ Dockerイメージのプッシュが完了しました${NC}\n"
 
 # ===========================================
-# ECSサービスの更新
+# ECSサービスの更新とCloudFrontデプロイ
 # ===========================================
-echo -e "${YELLOW}[8/8] ECSサービスを更新中...${NC}"
+echo -e "${YELLOW}[8/8] ECSサービスとCloudFrontをデプロイ中...${NC}"
 
-# クラスター名とサービス名を取得
-CLUSTER_NAME="${PROJECT_NAME}-${ENVIRONMENT}-cluster"
-SERVICE_NAME="${PROJECT_NAME}-${ENVIRONMENT}-service"
+# ステップ3: ECSスタックを再デプロイ（今度はサービスを起動）
+echo -e "${CYAN}[8-1] ECSサービスを起動中...${NC}"
+cdk deploy ${PROJECT_NAME}-${ENVIRONMENT}-EcsStack --require-approval never
 
-# サービスを強制的に新しいデプロイメントで更新
-aws ecs update-service \
-    --cluster ${CLUSTER_NAME} \
-    --service ${SERVICE_NAME} \
-    --force-new-deployment \
-    --region ${AWS_REGION} > /dev/null
+# ステップ4: WAFとCloudFrontスタック
+echo -e "${CYAN}[8-2] CloudFrontスタックをデプロイ中...${NC}"
+if [ "$ENABLE_WAF" = "true" ]; then
+    cdk deploy ${PROJECT_NAME}-${ENVIRONMENT}-WafStack \
+               ${PROJECT_NAME}-${ENVIRONMENT}-CloudFrontStack \
+               --require-approval never
+else
+    cdk deploy ${PROJECT_NAME}-${ENVIRONMENT}-CloudFrontStack --require-approval never
+fi
 
-echo -e "${GREEN}✓ ECSサービスの更新が完了しました${NC}\n"
+echo -e "${GREEN}✓ 全てのスタックのデプロイが完了しました${NC}\n"
 
 cd ..
 

@@ -12,7 +12,21 @@
       "Bash(docker-compose logs:*)",
       "Bash(npm install)",
       "Bash(npm run build)",
-      "Bash(npx cdk bootstrap:*)"
+      "Bash(npx cdk bootstrap:*)",
+      "Bash(aws cloudformation list-stacks:*)",
+      "Bash(aws cloudformation describe-stacks:*)",
+      "Bash(cdk synth:*)",
+      "Bash(/dev/null)",
+      "Bash(printf:*)",
+      "Bash(npm run deploy:local:*)",
+      "Bash(tee:*)",
+      "Bash(cdk deploy:*)",
+      "Bash(echo:*)",
+      "Bash(aws cloudformation delete-stack:*)",
+      "Bash(export PROJECT_NAME=wdp)",
+      "Bash(export ENVIRONMENT=production)",
+      "Bash(export AWS_REGION=ap-northeast-1)",
+      "Bash(export AWS_ACCOUNT_ID=845989088875)"
     ],
     "deny": [],
     "ask": []

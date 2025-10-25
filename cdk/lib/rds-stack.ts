@@ -70,7 +70,7 @@ export class RdsStack extends cdk.Stack {
     // パラメータグループの作成（WordPress最適化）
     const parameterGroup = new rds.ParameterGroup(this, 'DatabaseParameterGroup', {
       engine: rds.DatabaseInstanceEngine.mysql({
-        version: rds.MysqlEngineVersion.VER_8_0_35,
+        version: rds.MysqlEngineVersion.VER_8_0,
       }),
       description: 'Parameter group for WordPress database',
       parameters: {
@@ -88,7 +88,7 @@ export class RdsStack extends cdk.Stack {
     this.database = new rds.DatabaseInstance(this, 'Database', {
       instanceIdentifier: `${props.projectName}-${props.environment}-db`,
       engine: rds.DatabaseInstanceEngine.mysql({
-        version: rds.MysqlEngineVersion.VER_8_0_35,
+        version: rds.MysqlEngineVersion.VER_8_0,
       }),
       instanceType: props.instanceType || ec2.InstanceType.of(
         ec2.InstanceClass.T3,
@@ -126,8 +126,8 @@ export class RdsStack extends cdk.Stack {
 
       // モニタリング
       monitoringInterval: cdk.Duration.seconds(60),
-      enablePerformanceInsights: true,
-      performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
+      enablePerformanceInsights: false, // t3.microではサポートされていない
+      // performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
 
       // CloudWatch Logsへのエクスポート
       cloudwatchLogsExports: ['error', 'general', 'slowquery'],

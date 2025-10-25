@@ -143,12 +143,16 @@ export class EcsStack extends cdk.Stack {
       allowAllOutbound: true,
     });
 
+    // 初回デプロイかどうかをチェック（ECRにイメージがまだプッシュされていない場合）
+    const isInitialDeploy = process.env.INITIAL_DEPLOY === 'true';
+
     // Fargateサービスの作成
     this.service = new ecs.FargateService(this, 'Service', {
       serviceName: `${props.projectName}-${props.environment}-service`,
       cluster: this.cluster,
       taskDefinition,
-      desiredCount: props.desiredCount || 2,
+      // 初回デプロイ時は0タスクで開始、ECRにイメージをプッシュ後に更新
+      desiredCount: isInitialDeploy ? 0 : (props.desiredCount || 2),
       minHealthyPercent: 50,
       maxHealthyPercent: 200,
       securityGroups: [this.securityGroup],
