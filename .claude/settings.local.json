@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(find:*)",
+      "Bash(for file in docs/*.md)",
+      "Bash(do echo:*)",
+      "Bash(done)",
+      "Bash(for:*)",
+      "Bash(awk:*)"
     ],
     "deny": [],
     "ask": []

@@ -11,11 +11,11 @@ if ! wp core is-installed --allow-root 2>/dev/null; then
 
   # WordPress初期設定
   wp core install \
-    --url="http://localhost:8000" \
-    --title="Newsider HP" \
-    --admin_user="admin" \
-    --admin_password="admin" \
-    --admin_email="admin@example.com" \
+    --url="${WP_URL}" \
+    --title="${WP_TITLE}" \
+    --admin_user="${WP_ADMIN_USER}" \
+    --admin_password="${WP_ADMIN_PASSWORD}" \
+    --admin_email="${WP_ADMIN_EMAIL}" \
     --allow-root
 
   # 言語を日本語に設定
@@ -36,9 +36,9 @@ if ! wp core is-installed --allow-root 2>/dev/null; then
   wp post delete 2 --force --allow-root 2>/dev/null || true
 
   echo "WordPress installation completed!"
-  echo "URL: http://localhost:8000"
-  echo "Admin User: admin"
-  echo "Admin Password: admin"
+  echo "URL: ${WP_URL}"
+  echo "Admin User: ${WP_ADMIN_USER}"
+  echo "Admin Password: ${WP_ADMIN_PASSWORD}"
 else
   echo "WordPress is already installed."
 fi

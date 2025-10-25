@@ -7,10 +7,10 @@ services:
       - db_data:/var/lib/mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: newsider
-      MYSQL_DATABASE: newsider_db
-      MYSQL_USER: newsider
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
   wordpress:
     depends_on:
@@ -19,15 +19,15 @@ services:
     container_name: newsider_hp_app
     platform: linux/amd64
     ports:
-      - "8000:80"
+      - "${WORDPRESS_PORT}:80"
     restart: always
     volumes:
       - ./wordpress:/var/www/html # WordPressのすべてのファイルをマウント
     environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: newsider
-      WORDPRESS_DB_PASSWORD: password
-      WORDPRESS_DB_NAME: newsider_db
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
       WORDPRESS_LOCALE: ja
 
   # Tailwind CSSビルドサービス
@@ -52,10 +52,15 @@ services:
       - ./wordpress:/var/www/html
       - ./scripts:/scripts
     environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: newsider
-      WORDPRESS_DB_PASSWORD: password
-      WORDPRESS_DB_NAME: newsider_db
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WP_URL: ${WP_URL}
+      WP_TITLE: ${WP_TITLE}
+      WP_ADMIN_USER: ${WP_ADMIN_USER}
+      WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
     entrypoint: /scripts/wp-init.sh
     restart: "no"
 
